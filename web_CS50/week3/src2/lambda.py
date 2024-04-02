@@ -4,7 +4,7 @@ movies = [
     {"title": "Moonlight", "year": 2016},
     {"title": "Spotlight", "year": 2015},
     {"title": "Birdman", "year": 2014},
-    {"title": "12 Years a Slave", "year": 2013}
+    {"title": "12 Years a Slave", "year": 2013},
 ]
 
 movies.sort(key=lambda movie: movie["year"])

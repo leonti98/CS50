@@ -2,18 +2,14 @@ airports = [
     {
         "name": "Beijing Capital International Airport",
         "code": "PEK",
-        "country": "China"
+        "country": "China",
     },
     {
         "name": "Los Angeles International Airport",
         "code": "LAX",
-        "country": "United States"
+        "country": "United States",
     },
-    {
-        "name": "London Heathrow Airport",
-        "code": "LHR",
-        "country": "United Kingdom"
-    }
+    {"name": "London Heathrow Airport", "code": "LHR", "country": "United Kingdom"},
 ]
 
 for airport in airports:
