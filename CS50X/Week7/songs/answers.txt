@@ -1,0 +1,16 @@
++-------------+--------------+-------------------+
+| AVG(energy) | AVG(valence) | AVG(danceability) |
++-------------+--------------+-------------------+
+| 0.65906     | 0.484443     | 0.71646           |
++-------------+--------------+-------------------+
+
+With this information, we can hypothesize that the
+listener is energetic and loves dancing.
+However, the positiveness of songs is less than
+an average of 0.5 on Spotify, leading to unexpected result.
+
+A better way to determine the aura of the listener would be
+to calculate the weighted average of energy, valence, and danceability
+based on the number of plays on each song.
+This approach would more accurately represent the listener's aura.
+

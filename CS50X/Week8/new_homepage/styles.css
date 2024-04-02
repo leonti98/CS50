@@ -1,0 +1,52 @@
+body {
+    background-color: #232e39;
+}
+
+* a {
+    text-decoration: none;
+}
+
+#header {
+    display: flex;
+    padding: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+h1 {
+    color: white;
+}
+
+#menu {
+    text-align: center;
+    padding: 10px 20px;
+}
+
+#menu a {
+    padding: 10px 20px;
+    font-size: 20px;
+    color: white;
+    text-transform: upperCase;
+}
+
+#menu h2 {
+    display: inline-block;
+}
+
+#menu h2:hover {
+    text-decoration: overline;
+    text-decoration-color: white;
+}
+
+p {
+    color: white;
+}
+
+h2 {
+    color: white;
+    text-transform: upperCase;
+}
+
+.nav {
+    justify-content: center
+}

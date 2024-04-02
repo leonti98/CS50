@@ -1,0 +1,25 @@
+sort1 uses: Bubble sort
+
+sort1 random5000.txt - 0m0.071
+sort1 random50000.txt - 0m5.950
+sort1 reveresed50000.txt - 0m4.906
+sort1 sorted10000.txt - 0m0.120
+
+How do you know?: takes a lot of time to sort revesed list of numbers compared to third. second should be merge sort, since it takes almost same amount of time, idependant of task given.
+
+sort2 uses: Merge sort
+sort2 random5000.txt - 0m0.071
+sort2 random50000.txt - 0m0.559
+sort2 reveresed50000.txt - 0m0.674
+sort2 sorted10000.txt - 0m0.069
+
+How do you know?: This should be merge sort since it takes same low amount of time independent of task give. And this function takes lowest time to sort randmized numbers list.
+
+
+sort3 uses: Selection sort
+sort3 random5000.txt - 0.115
+sort3 random50000.txt - 0m2.423
+sort3 reversed50000.txt - 0m2.584
+sort3 sorted10000.txt - 0m0.136s
+
+How do you know?: since it takes lower time for revesed list compared to first, this should be bubble sort. It taks time to bubble up numbers.

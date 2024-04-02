@@ -1,0 +1,20 @@
+$myred: blue;
+
+ul {
+    font-size: 14px;
+    color: $myred;
+}
+
+ol {
+    font-size: 18px;
+    color: $myred;
+}
+
+%message {
+    font-family: 'Courier New', Courier, monospace
+}
+
+.success {
+    @extend %message;
+    background-color: red;
+}

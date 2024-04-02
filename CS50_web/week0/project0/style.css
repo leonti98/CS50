@@ -1,0 +1,127 @@
+body {
+    padding: 0px;
+    margin: 0px;
+    background-color: #202124;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+button {
+    background-color: #303134;
+    border: 1px solid white;
+    padding: 10px 20px;
+    font-size: 12px;
+}
+
+h1 {
+    font-size: 3rem;
+}
+
+.text {
+    margin-bottom: 0px;
+}
+
+.header {
+    background-color: #202124;
+    color: aliceblue;
+    display: flex;
+    justify-content: end;
+    margin-right: 20px;
+    margin-top: 20px;
+}
+
+a {
+    font-size: 0.9rem;
+    text-decoration: none;
+    color: aliceblue;
+    margin-right: 10px;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+label {
+    color: aliceblue;
+}
+
+a:active {
+    color: aliceblue;
+    text-decoration: none;
+}
+
+
+a:visited {
+    color: aliceblue;
+    text-decoration: none;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+
+}
+
+h1 {
+    color: aliceblue;
+    font-size: 4rem;
+}
+
+.field {
+    text-align: center;
+    padding: 5px;
+}
+
+input {
+    padding: 1rem 2rem;
+    background-color: #202124;
+    margin: 10px;
+    color: aliceblue;
+    font-size: 1rem;
+}
+
+input[type=text] {
+    border-radius: 20px;
+    width: 40vw;
+    outline: none;
+    border: 1px solid grey;
+}
+
+input[type=text]:focus-visible {
+    border: none;
+    outline: none;
+}
+
+input[type=text]:focus {
+    border: 1px solid #303134;
+    background-color: #303134;
+}
+
+input[type=submit] {
+    border-radius: 5px;
+    width: 30vw;
+    border: 1px solid grey;
+}
+
+input[type=text]:hover {
+    border: 1px solid #303134;
+    background-color: #303134;
+}
+
+input[type=submit]:hover {
+    border: 1px solid grey;
+    cursor: pointer;
+    background-color: #303134;
+}
+
+input:focus {
+    border-color: grey;
+}
+
+.fieldSingle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
