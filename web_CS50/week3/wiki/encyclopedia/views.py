@@ -1,8 +1,13 @@
 from django.shortcuts import render
+from django import forms
 from django.shortcuts import redirect
+import markdown2
 
 from . import util
 
+class NewEntryForm(forms.Form):
+    title = forms.CharField(label="Title", widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Title', 'required': "required"}))
+    content = forms.CharField(widget=forms.Textarea(attrs={'class':"form-control", 'placeholder':"Write content here in Markdown", 'style':"height: 100px", 'required': "required"}))
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
@@ -13,12 +18,12 @@ def entry_page(request, entry_title):
     entry_content = util.get_entry(entry_title)
     if entry_content:
         return render(request, "encyclopedia/entry.html", {
-            "entry_title": entry_title,
-            "entry_content": entry_content
+            "entry_title": markdown2.markdown(entry_title),
+            "entry_content": markdown2.markdown(entry_content)
         })
     else:
         return render(request, "encyclopedia/error.html", {
-            "entry_title": entry_title
+            "error_message": f"WIKI { entry_title } Not Found"
         })
     
 def search(request):
@@ -43,3 +48,20 @@ def search(request):
         
 def suggestions(request):
     return render(request, "suggestions.html")
+
+def add_page(request):
+    if request.method == "POST":
+        submited_form = NewEntryForm(request.POST)
+        if submited_form.is_valid():
+            title = submited_form.cleaned_data["title"]
+            existing_entries = util.list_entries()
+            if title in existing_entries:
+                return render(request, "encyclopedia/error.html", {
+                "error_message": f"Wiki '{title}' already exists"
+                })
+            content = submited_form.cleaned_data["content"]
+            print(title)
+            print(content)
+    return render(request, "encyclopedia/add_page.html", {
+        "form": NewEntryForm()
+    })
