@@ -1,0 +1,18 @@
+{% extends "encyclopedia/layout.html" %}
+{% block title %}
+    Suggestions
+{% endblock title %}
+{% block body %}
+    <div>
+        <h1>Suggestions</h1>
+        <div>
+            <ul class="list-group">
+                {% for match in matching %}
+                    <li class="list-group-item">
+                        <a href="{% url 'entry_page' match %}">{{ match }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock body %}
