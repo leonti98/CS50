@@ -6,6 +6,10 @@
     <h1>Add Your Wiki</h1>
     <form action="add_page" method="post">
         {% csrf_token %}
+        <div class="alert alert-warning" role="alert">
+            Textarea Content Sould Be Written In <a href="https://help.github.com/en/github/writing-on-github/basic-writing-and-formatting-syntax"
+    class="alert-link">Markdown</a>
+        </div>
         {{ form }}
         <button type="submit" class="btn btn-primary">Create Wiki</button>
     </form>

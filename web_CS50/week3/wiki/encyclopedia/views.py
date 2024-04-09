@@ -22,8 +22,7 @@ class NewEntryForm(forms.Form):
         widget=forms.Textarea(
             attrs={
                 "class": "form-control",
-                "placeholder": "Write content here in Markdown",
-                "style": "height: 100px",
+                "placeholder": "Write content in Markdown",
                 "required": "required",
             }
         )
@@ -78,10 +77,9 @@ def suggestions(request):
 
 def add_page(request):
     if request.method == "POST":
-        submited_form = NewEntryForm(request.POST)
-        if submited_form.is_valid():
-            # print(submited_form)
-            title = submited_form.cleaned_data["title"]
+        submitted_form = NewEntryForm(request.POST)
+        if submitted_form.is_valid():
+            title = submitted_form.cleaned_data["title"]
             existing_entries = util.list_entries()
             if title in existing_entries:
                 return render(
@@ -92,11 +90,45 @@ def add_page(request):
             subdirectory_path = "entries/"
             path_title = title.replace(" ", "_")
             file_path = os.path.join(subdirectory_path, f"{path_title}.md")
-            content = submited_form.cleaned_data["content"]
-            print(file_path)
+            content = submitted_form.cleaned_data["content"]
             with open(file_path, "w") as file:
                 file.write(f"#{title}\n\n")
                 file.write(content)
             return redirect(f"wiki/{path_title}")
 
     return render(request, "encyclopedia/add_page.html", {"form": NewEntryForm()})
+
+
+def edit_page(request, entry_title):
+    if request.method == "POST":
+        submitted_form = NewEntryForm(request.POST)
+        if submitted_form.is_valid():
+            title = submitted_form.cleaned_data["title"]
+            content = submitted_form.cleaned_data["content"]
+            with open(f"entries/{title}.md", "w") as file:
+                file.write(content)
+            return redirect(f"../wiki/{title}")
+        else:
+            return render(
+                request,
+                "encyclopedia/error.html",
+                {"error_message": f"Wiki '{title}' can't be edited or does not exist"},
+            )
+    entry_content = util.get_entry(entry_title)
+    if entry_content:
+        return render(
+            request,
+            "encyclopedia/edit_page.html",
+            {
+                "entry_content": entry_content,
+                "entry_title": entry_title,
+            },
+        )
+    else:
+        return render(
+            request,
+            "encyclopedia/error.html",
+            {
+                "error_message": f"Wiki '{entry_title}' can't be edited or does not exist"
+            },
+        )

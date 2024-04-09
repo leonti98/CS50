@@ -3,5 +3,6 @@
     Wiki - {{ entry_title }}
 {% endblock title %}
 {% block body %}
-    {{ entry_content|safe }}
+    <div>{{ entry_content|safe }}</div>
+    <a class="btn btn-primary" href="{% url 'edit_page' entry_title %}">Edit Wiki</a>
 {% endblock body %}
