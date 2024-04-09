@@ -15,7 +15,7 @@ Welcome to my repository containing completed coursework for CS50, CS50 Web, and
 - [x] HTML, CSS, JavaScript
 - [x] Flask
 - [x] Cybersecurity
-- [] Final
+- [ ] Final
 
 ## CS50 Python (Finished)
 
@@ -37,9 +37,9 @@ Welcome to my repository containing completed coursework for CS50, CS50 Web, and
 - [x] Git
 - [x] Python
 - [x] Django
-- [] SQL, Models, and Migrations
-- [] JavaScript
-- [] User Interfaces
-- [] Testing, CI/CD
-- [] Scalability and Security
-- [] Final
+- [ ] SQL, Models, and Migrations
+- [ ] JavaScript
+- [ ] User Interfaces
+- [ ] Testing, CI/CD
+- [ ] Scalability and Security
+- [ ] Final
