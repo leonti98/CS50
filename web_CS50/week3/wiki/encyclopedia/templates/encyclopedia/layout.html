@@ -22,7 +22,9 @@
                     <a href="{% url 'index' %}">Home</a>
                 </div>
                 <a href="{% url 'add_page' %}">Create New Page</a>
-                <div>Random Page</div>
+                <div>
+                    <a href="{% url 'random_page' %}">Random Page</a>
+                </div>
                 {% block nav %}{% endblock %}
             </div>
             <div class="main col-lg-10 col-md-9">

@@ -3,6 +3,7 @@ from django import forms
 from django.shortcuts import redirect
 import markdown2
 import os
+import random
 
 from . import util
 
@@ -132,3 +133,9 @@ def edit_page(request, entry_title):
                 "error_message": f"Wiki '{entry_title}' can't be edited or does not exist"
             },
         )
+
+
+def random_page(request):
+    entries = util.list_entries()
+    random_entry = random.choice(entries)
+    return entry_page(request=request, entry_title=random_entry)
