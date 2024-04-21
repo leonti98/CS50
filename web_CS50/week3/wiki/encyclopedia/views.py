@@ -65,7 +65,9 @@ def search(request):
         if matching:
             print(matching)
             return render(
-                request, "encyclopedia/suggestions.html", {"matching": matching}
+                request,
+                "encyclopedia/suggestions.html",
+                {"matching": matching, "title": get_str},
             )
         else:
             print("NO MATCH")
