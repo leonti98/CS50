@@ -1,0 +1,29 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+    <div class="container">
+        <h1>{{ current_category }}</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'index' %}">Home</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'main_categories' %}">Categories</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'sub_categories' main_category %}">{{ main_category }}</a>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">{{ current_category }}</li>
+            </ol>
+        </nav>
+        {% if lots %}
+            <ul class="list-group">
+                {% for lot in lots %}<li class="list-group-item">{{ lot }}</li>{% endfor %}
+            </ul>
+        {% else %}
+            <div class="alert alert-warning" role="alert">
+                <h2 id="emptyCategory">Category is empty</h2>
+            </div>
+        {% endif %}
+    </div>
+{% endblock body %}

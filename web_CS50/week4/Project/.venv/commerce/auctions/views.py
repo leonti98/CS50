@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.forms import DateInput, ModelForm
-from auctions.models import Lot
+from auctions.models import Lot, Sub_category, Main_Category
 from django import forms
 import datetime
 
@@ -91,7 +91,7 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
-@login_required(redirect_field_name="/login")
+@login_required()
 def add_lot(request):
     if request.method == "POST":
         submited_form = LotForm(request.POST)
@@ -103,3 +103,46 @@ def add_lot(request):
             submited_form.save
 
     return render(request, "auctions/add_lot.html", {"form": LotForm()})
+
+
+def main_categories(request):
+    categories = Main_Category.objects.all()
+    for category in categories:
+        print(category)
+    return render(request, "auctions/categories.html", {"categories": categories})
+
+
+def sub_categories(request, main_category):
+    parent = Main_Category.objects.filter(main_category=main_category)
+    parent_id = parent[0].id
+    sub_categories = Sub_category.objects.filter(parent_category=parent_id)
+    for category in sub_categories:
+        print(category)
+    return render(
+        request,
+        "auctions/sub_categories.html",
+        {"sub_categories": sub_categories, "main_category": main_category},
+    )
+
+
+def category_lot_list(request, main_category, sub_category):
+    current_sub_category = Sub_category.objects.get(sub_category=sub_category)
+    sub_category_id = current_sub_category.id
+    lots = Lot.objects.filter(category=sub_category_id)
+    return render(
+        request,
+        "auctions/category_lots.html",
+        {
+            "lots": lots,
+            "current_category": sub_category,
+            "main_category": main_category,
+        },
+    )
+
+
+def lot_page(request, lot_id):
+    lot = Lot.objects.get(pk=lot_id)
+    lot_sub_category = lot.category
+    lot_main_category = lot_sub_category.parent_category
+    link = f"/auctions/{lot_main_category}/{lot_sub_category}/{lot_id}"
+    render(request, link, {"lot": lot})

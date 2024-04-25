@@ -1,3 +1,7 @@
 body {
     padding: 10px;
 }
+
+#emptyCategory {
+    font-size: 1em;
+}
