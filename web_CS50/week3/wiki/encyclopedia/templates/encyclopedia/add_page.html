@@ -2,6 +2,19 @@
 {% block title %}
     Add Entry
 {% endblock title %}
+{% block head %}
+    <script>
+    $(function() {
+      $( ".datepicker" ).datepicker({
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "1900:2012",
+        // You can put more options here.
+  
+      });
+    });
+    </script>
+{% endblock head %}
 {% block body %}
     <h1>Add Your Wiki</h1>
     <form action="add_page" method="post">

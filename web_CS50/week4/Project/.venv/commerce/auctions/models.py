@@ -17,6 +17,9 @@ class Main_Category(models.Model):
     class Meta:
         verbose_name_plural = "Main_Categories"
 
+    def __str__(self):
+        return self.main_category
+
 
 class Sub_category(models.Model):
     id = models.AutoField(primary_key=True)
@@ -29,7 +32,7 @@ class Sub_category(models.Model):
         verbose_name_plural = "Sub_categories"
 
     def __str__(self):
-        return f"Parent Category: {self.parent_category}, Category: {self.sub_category}"
+        return self.sub_category
 
 
 class Lot(models.Model):
@@ -47,8 +50,10 @@ class Lot(models.Model):
         models.CASCADE,
         related_name="category",
     )
-    open_time = models.TimeField(default=timezone.now)
-    close_time = models.TimeField(auto_now=False, auto_now_add=False)
+    open_time = models.DateField(default=datetime.date.today)
+    close_time = models.DateField(
+        verbose_name="Lot Closing Date", default=datetime.date.today
+    )
 
     def __str__(self):
         return f"Lot: {self.title}, Starting Price: {self.starting_price}, Category: {self.category}"
@@ -66,6 +71,9 @@ class Bid(models.Model):
     )
     date = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.bid
+
 
 class Comment(models.Model):
     id = models.AutoField(primary_key=True)
@@ -75,3 +83,19 @@ class Comment(models.Model):
     lot = models.ForeignKey(Lot, on_delete=models.CASCADE, related_name="comments")
     post_time = models.DateTimeField(auto_now_add=True)
     text = models.TextField(max_length=200)
+
+    def __str__(self):
+        return self.text
+
+
+class Wishlist(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="user",
+    )
+    lot = models.ForeignKey(Lot, on_delete=models.CASCADE, related_name="lot")
+
+    def __str__(self):
+        return self.lot.title
