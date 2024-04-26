@@ -13,13 +13,20 @@ from .models import User
 
 
 class LotForm(ModelForm):
-    """Form definition for Lot."""
+    """Form to add new lots"""
 
     class Meta:
         """Meta definition for Lotform."""
 
         model = Lot
-        fields = ("title", "decription", "starting_price", "category", "close_time")
+        fields = (
+            "title",
+            "decription",
+            "starting_price",
+            "category",
+            "close_time",
+            "image",
+        )
         widgets = {
             "close_time": DateInput(
                 attrs={
@@ -31,8 +38,16 @@ class LotForm(ModelForm):
         }
 
 
+class CloseForm(forms.Form):
+    """From to close Lots."""
+
+    lot_id = forms.HiddenInput()
+
+
 def index(request):
-    return render(request, "auctions/index.html")
+    lots = Lot.objects.all()
+    print(lots[0].category.parent_category)
+    return render(request, "auctions/index.html", {"lots": lots})
 
 
 def login_view(request):
@@ -140,9 +155,24 @@ def category_lot_list(request, main_category, sub_category):
     )
 
 
-def lot_page(request, lot_id):
+def lot_page(request, main_category, sub_category, lot_id):
+    print(request)
     lot = Lot.objects.get(pk=lot_id)
-    lot_sub_category = lot.category
-    lot_main_category = lot_sub_category.parent_category
-    link = f"/auctions/{lot_main_category}/{lot_sub_category}/{lot_id}"
-    render(request, link, {"lot": lot})
+    return render(
+        request,
+        "auctions/single_lot.html",
+        {
+            "lot": lot,
+            "main_category": main_category,
+            "sub_category": sub_category,
+            "close_form": CloseForm,
+        },
+    )
+
+
+def close_lot(request, lot_id):
+    if request.method == "POST":
+        lot = Lot.objects.get(pk=lot_id)
+        lot.is_open = False
+        lot.save()
+    return HttpResponseRedirect("/")

@@ -5,3 +5,7 @@ body {
 #emptyCategory {
     font-size: 1em;
 }
+
+div.col-md-12:nth-child(1) > div:nth-child(1) {
+    margin-bottom: 30px;
+}

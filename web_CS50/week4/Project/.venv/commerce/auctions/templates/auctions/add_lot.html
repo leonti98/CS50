@@ -9,7 +9,7 @@
         <div>
             <form action="add_lot" method="post">
                 {% csrf_token %}
-                <div class="mb-3">{{ form|crispy }}</div>
+                {{ close_form }}
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>

@@ -1,0 +1,70 @@
+{% extends 'auctions/layout.html' %}
+{% block body %}
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'index' %}">Home</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'main_categories' %}">Categories</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'sub_categories' main_category %}">{{ main_category }}</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{% url 'category_lot_list' main_category=main_category sub_category=lot.category %}">{{ lot.category }}</a>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">{{ lot.title }}</li>
+            </ol>
+        </nav>
+        <div class="container mt-5 mb-5">
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-10">
+                    <div class="card">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="images p-3">
+                                    <div class="text-center p-4">
+                                        <img src="{{ lot.image }}"
+                                             class="card-img-top"
+                                             alt="{{ lot.title }}"
+                                             height="300px"
+                                             width="400px" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="product p-4">
+                                    <div class="mt-4 mb-3">
+                                        <h5 class="text-uppercase">{{ lot.title }}</h5>
+                                        <div class="price d-flex flex-row align-items-center">
+                                            <div class="ml-2">
+                                                <small class="dis-price">{{ lot.starting_price }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="about">{{ lot.decription }}</p>
+                                    <div class="cart mt-4 align-items-center">
+                                        {% if lot.is_open %}
+                                            <button class="btn btn-danger text-uppercase mr-2 px-4">Bid</button>
+                                            {% if user.id == lot.owner.id %}
+                                                <form action="{% url 'close_lot' lot_id=lot.id %}" method="post">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger text-uppercase mr-2 px-4">Close Lot</button>
+                                                </form>
+                                            {% else %}
+                                            {% endif %}
+                                        {% else %}
+                                            <button class="btn btn-danger text-uppercase mr-2 px-4 disabled">Closed</button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}

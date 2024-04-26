@@ -24,4 +24,5 @@ urlpatterns = [
         views.lot_page,
         name="lot_page",
     ),
+    path("close_lot/<int:lot_id>", views.close_lot, name="close_lot"),
 ]

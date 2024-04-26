@@ -39,7 +39,7 @@ class Lot(models.Model):
     id = models.AutoField(primary_key=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owner")
     title = models.CharField(max_length=50)
-    decription = models.TextField(max_length=300)
+    decription = models.TextField(max_length=3000)
     starting_price = MoneyField(
         max_digits=14,
         decimal_places=2,
@@ -54,6 +54,10 @@ class Lot(models.Model):
     close_time = models.DateField(
         verbose_name="Lot Closing Date", default=datetime.date.today
     )
+    image = models.URLField(
+        ("Please insert link to image"), max_length=2000, default=None
+    )
+    is_open = models.BooleanField(default=True)
 
     def __str__(self):
         return f"Lot: {self.title}, Starting Price: {self.starting_price}, Category: {self.category}"

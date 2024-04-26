@@ -1,7 +1,35 @@
 {% extends "auctions/layout.html" %}
-
 {% block body %}
-    <h2>Active Listings</h2>
-
-    TODO
-{% endblock %}
+    <div class="container">
+        <h2>Active Listings</h2>
+        <section style="background-color: #eee;">
+            <div class="container py-5">
+                <div class="row">
+                    {% for lot in lots %}
+                        <div class="col-md-12 col-lg-4 mb-4 mb-lg-0">
+                            <div class="card product_card">
+                                <img src="{{ lot.image }}"
+                                     class="card-img-top"
+                                     alt="{{ lot.title }}"
+                                     height="300px"
+                                     width="400px" />
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <p class="small">
+                                            <a href="{{ lot.category }}" class="text-muted">{{ lot.category }}</a>
+                                        </p>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <a href="{% url 'lot_page' main_category=lot.category.parent_category sub_category=lot.category lot_id=lot.id %}">
+                                            <h5 class="mb-0">{{ lot.title }}</h5>
+                                        </a>
+                                        <h5 class="text-dark mb-0">{{ lot.starting_price }}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    {% endblock %}
