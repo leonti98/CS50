@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('auctions', '0009_alter_lot_decription'),
+        ("auctions", "0009_alter_lot_decription"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='lot',
-            name='is_open',
+            model_name="lot",
+            name="is_open",
             field=models.BooleanField(default=True),
         ),
     ]

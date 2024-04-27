@@ -27,11 +27,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+USE_L10N = False
 
 # Application definition
 
 INSTALLED_APPS = [
     "auctions",
+    "djmoney",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -41,6 +43,9 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
 ]
+
+CURRENCIES = ("USD",)
+CURRENCY_CHOICES = [("USD", "$ USD")]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 

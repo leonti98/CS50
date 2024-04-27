@@ -1,4 +1,5 @@
 {% extends 'auctions/layout.html' %}
+{% load crispy_forms_tags %}
 {% block body %}
     <div class="container">
         <nav aria-label="breadcrumb">
@@ -26,11 +27,7 @@
                             <div class="col-md-6">
                                 <div class="images p-3">
                                     <div class="text-center p-4">
-                                        <img src="{{ lot.image }}"
-                                             class="card-img-top"
-                                             alt="{{ lot.title }}"
-                                             height="300px"
-                                             width="400px" />
+                                        <img src="{{ lot.image }}" class="card-img-top" alt="{{ lot.title }}" />
                                     </div>
                                 </div>
                             </div>
@@ -38,26 +35,52 @@
                                 <div class="product p-4">
                                     <div class="mt-4 mb-3">
                                         <h5 class="text-uppercase">{{ lot.title }}</h5>
+                                        <p>Seller: {{ lot.owner.username }}</p>
                                         <div class="price d-flex flex-row align-items-center">
                                             <div class="ml-2">
                                                 <small class="dis-price">{{ lot.starting_price }}</small>
                                             </div>
                                         </div>
                                     </div>
-                                    <p class="about">{{ lot.decription }}</p>
+                                    <p class="about">{{ lot.description }}</p>
                                     <div class="cart mt-4 align-items-center">
-                                        {% if lot.is_open %}
-                                            <button class="btn btn-danger text-uppercase mr-2 px-4">Bid</button>
-                                            {% if user.id == lot.owner.id %}
-                                                <form action="{% url 'close_lot' lot_id=lot.id %}" method="post">
-                                                    {% csrf_token %}
-                                                    <button type="submit" class="btn btn-danger text-uppercase mr-2 px-4">Close Lot</button>
-                                                </form>
+                                        <div id="lot-info" data-lot-id="{{ lot.id }}">
+                                            {% if lot.is_open %}
+                                                {% if highest_bid %}
+                                                    <div>
+                                                        <div id="highest-bid">
+                                                            <span>Highest Bid :</span>
+                                                            {{ highest_bid }}
+                                                            by
+                                                            {{ highest_bidder }}
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                                {% if lot.highest_bidder != request.user %}
+                                                    <div id="bid_form">
+                                                        <form action="{% url 'lot_page' main_category=lot.category.parent_category sub_category=lot.category lot_id=lot.id %}"
+                                                              method="post">
+                                                            {% csrf_token %}
+                                                            {{ bid_form }}
+                                                            <button type="submit" class="btn btn-success text-uppercase mr-2 px-4">Bid</button>
+                                                        </form>
+                                                    </div>
+                                                {% else %}
+                                                    <div id=message class="alert alert-success" role="alert  ">You are highest bidder</div>
+                                                {% endif %}
+                                                {% if message %}<div id="second_message" class="alert alert-warning" role="alert">{{ message }}</div>{% endif %}
+                                                {% if user.id == lot.owner.id %}
+                                                    <form action="{% url 'close_lot' lot_id=lot.id %}" method="post">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-danger text-uppercase mr-2 px-4">Close Lot</button>
+                                                    </form>
+                                                {% else %}
+                                                {% endif %}
                                             {% else %}
+                                                <h4 id="highest-bid">winner of this lot is {{ highest_bidder }}</h4>
+                                                <button class="btn btn-danger text-uppercase mr-2 px-4 disabled">Closed</button>
                                             {% endif %}
-                                        {% else %}
-                                            <button class="btn btn-danger text-uppercase mr-2 px-4 disabled">Closed</button>
-                                        {% endif %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -67,4 +90,29 @@
             </div>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function updateBidInfo() {
+            const lotId = $('#lot-info').data('lot-id');
+            $.ajax({
+                url: '/update-bid-info/' + lotId + '/',
+                type: 'GET',
+                success: function(data) {
+                    $('#message').text(data.message);
+                    $('#message').removeClass().addClass(data.alert_class);
+                    console.log($('#second_message'))
+                    $('#second_message').remove();
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error:", error);
+                }
+            });
+        }
+    
+        // Call updateBidInfo every 10 seconds
+        setInterval(function() {
+            console.log("Updating bid info...");
+            updateBidInfo();
+        }, 5000); // 10 seconds in milliseconds
+    </script>
 {% endblock body %}

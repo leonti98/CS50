@@ -25,4 +25,8 @@ urlpatterns = [
         name="lot_page",
     ),
     path("close_lot/<int:lot_id>", views.close_lot, name="close_lot"),
+    path("place_bid/<int:lot_id>", views.place_bid, name="place_bid"),
+    path(
+        "update-bid-info/<int:lot_id>/", views.update_bid_info, name="update_bid_info"
+    ),
 ]

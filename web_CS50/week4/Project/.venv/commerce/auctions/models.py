@@ -5,6 +5,8 @@ from django.utils import timezone
 from djmoney.models.validators import MinMoneyValidator
 import datetime
 
+from moneyed import Money
+
 
 class User(AbstractUser):
     pass
@@ -39,14 +41,15 @@ class Lot(models.Model):
     id = models.AutoField(primary_key=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owner")
     title = models.CharField(max_length=50)
-    decription = models.TextField(max_length=3000)
+    description = models.TextField(max_length=3000)  # corrected spelling of description
     starting_price = MoneyField(
         max_digits=14,
         decimal_places=2,
         default_currency="USD",
+        currency_choices=(("USD", "USD"),),
     )
     category = models.ForeignKey(
-        Sub_category,
+        "Sub_category",
         models.CASCADE,
         related_name="category",
     )
@@ -56,6 +59,23 @@ class Lot(models.Model):
     )
     image = models.URLField(
         ("Please insert link to image"), max_length=2000, default=None
+    )
+    highest_bid = MoneyField(
+        ("Highest Bid"),
+        max_digits=14,
+        decimal_places=2,
+        default_currency="USD",
+        blank=True,
+        null=True,
+        currency_choices=(("USD", "USD"),),
+    )
+    highest_bidder = models.ForeignKey(
+        User,
+        verbose_name=("Highest Bidder"),
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        default=None,
     )
     is_open = models.BooleanField(default=True)
 
@@ -71,12 +91,18 @@ class Bid(models.Model):
         decimal_places=2,
         default_currency="USD",
         blank=False,
-        validators=[MinMoneyValidator(lot)],
     )
+    bidder = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bidder")
     date = models.DateTimeField(auto_now_add=True)
 
+    def save(self, *args, **kwargs):
+        self.lot.highest_bid = self.bid
+        self.lot.highest_bidder = self.bidder
+        self.lot.save()
+        super(Bid, self).save(*args, **kwargs)
+
     def __str__(self):
-        return self.bid
+        return str(self.bid.amount)
 
 
 class Comment(models.Model):

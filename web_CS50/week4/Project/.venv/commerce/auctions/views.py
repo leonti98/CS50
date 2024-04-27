@@ -1,12 +1,15 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.forms import DateInput, ModelForm
-from auctions.models import Lot, Sub_category, Main_Category
+from auctions.models import Lot, Sub_category, Main_Category, Bid
 from django import forms
+from djmoney.models.fields import MoneyField
+from djmoney.models.validators import MinMoneyValidator
+from django.contrib import messages
 import datetime
 
 from .models import User
@@ -16,12 +19,11 @@ class LotForm(ModelForm):
     """Form to add new lots"""
 
     class Meta:
-        """Meta definition for Lotform."""
 
         model = Lot
         fields = (
             "title",
-            "decription",
+            "description",
             "starting_price",
             "category",
             "close_time",
@@ -44,9 +46,22 @@ class CloseForm(forms.Form):
     lot_id = forms.HiddenInput()
 
 
+# class BidForm(forms.Form):
+#     amount = MoneyField
+
+
+class BidForm(forms.ModelForm):
+    """Form definition for Bid."""
+
+    class Meta:
+        """Meta definition for Bidform."""
+
+        model = Bid
+        fields = ("bid",)  # Notice the comma after "bid"
+
+
 def index(request):
     lots = Lot.objects.all()
-    print(lots[0].category.parent_category)
     return render(request, "auctions/index.html", {"lots": lots})
 
 
@@ -109,21 +124,18 @@ def register(request):
 @login_required()
 def add_lot(request):
     if request.method == "POST":
-        submited_form = LotForm(request.POST)
-        if submited_form.is_valid():
-            lot = submited_form.save(commit=False)
+        form = LotForm(request.POST)
+        if form.is_valid():
+            lot = form.save(commit=False)
             lot.owner = request.user
             lot.open_time = datetime.date.today()
             lot.save()
-            submited_form.save
 
     return render(request, "auctions/add_lot.html", {"form": LotForm()})
 
 
 def main_categories(request):
     categories = Main_Category.objects.all()
-    for category in categories:
-        print(category)
     return render(request, "auctions/categories.html", {"categories": categories})
 
 
@@ -131,8 +143,6 @@ def sub_categories(request, main_category):
     parent = Main_Category.objects.filter(main_category=main_category)
     parent_id = parent[0].id
     sub_categories = Sub_category.objects.filter(parent_category=parent_id)
-    for category in sub_categories:
-        print(category)
     return render(
         request,
         "auctions/sub_categories.html",
@@ -156,8 +166,32 @@ def category_lot_list(request, main_category, sub_category):
 
 
 def lot_page(request, main_category, sub_category, lot_id):
-    print(request)
+    if request.method == "POST":
+        submited_from = BidForm(request.POST)
+        if submited_from.is_valid():
+            lot = Lot.objects.get(pk=lot_id)
+            bid = submited_from.save(commit=False)
+            money = submited_from.cleaned_data["bid"]
+            if money.amount > lot.starting_price.amount:
+                if lot.highest_bid is None or lot.highest_bid.amount < money.amount:
+                    bid.lot = lot
+                    bid.bidder = request.user
+                    bid.save()
+                    message = "Bid was succesfully placed"
+                else:
+                    message = "Your bid was lower than highest bid"
+
+            else:
+                message = "Your bid was lower than starting price"
     lot = Lot.objects.get(pk=lot_id)
+    try:
+        if message:
+            pass
+    except:
+        if lot.highest_bidder == request.user:
+            message = None
+        else:
+            message = None
     return render(
         request,
         "auctions/single_lot.html",
@@ -165,7 +199,11 @@ def lot_page(request, main_category, sub_category, lot_id):
             "lot": lot,
             "main_category": main_category,
             "sub_category": sub_category,
+            "bid_form": BidForm,
             "close_form": CloseForm,
+            "highest_bid": lot.highest_bid,
+            "highest_bidder": lot.highest_bidder,
+            "message": message,
         },
     )
 
@@ -176,3 +214,26 @@ def close_lot(request, lot_id):
         lot.is_open = False
         lot.save()
     return HttpResponseRedirect("/")
+
+
+def place_bid(request, lot_id):
+    if request.method == "POST":
+        bid_form = BidForm
+        pass
+    return HttpResponseRedirect("/")
+
+
+def update_bid_info(request, lot_id):
+    try:
+        lot = Lot.objects.get(pk=lot_id)
+        if lot.highest_bidder != request.user:
+            message = "You are no longer highest bidder. Refresh page"
+            alert_class = "alert alert-warning role=alert"
+        else:
+            message = "You are still Highest bidder"  # You can add additional messages here if needed
+            alert_class = "alert alert-success role=alert"
+        context = {"message": message, "alert_class": alert_class}
+        return JsonResponse(context)
+
+    except Lot.DoesNotExist:
+        return JsonResponse({"error": "Lot not found"}, status=404)

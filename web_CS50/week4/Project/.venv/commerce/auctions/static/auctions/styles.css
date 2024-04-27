@@ -9,3 +9,11 @@ body {
 div.col-md-12:nth-child(1) > div:nth-child(1) {
     margin-bottom: 30px;
 }
+
+.btn {
+    margin-top: 10px;
+}
+
+#user_greeting {
+    color: chocolate;
+}
