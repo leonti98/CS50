@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.forms import DateInput, ModelForm
-from auctions.models import Lot, Sub_category, Main_Category, Bid
+from auctions.models import Lot, Sub_category, Main_Category, Bid, Comment, Wishlist
 from django import forms
 from djmoney.models.fields import MoneyField
 from djmoney.models.validators import MinMoneyValidator
@@ -40,14 +40,31 @@ class LotForm(ModelForm):
         }
 
 
+class WishlistForm(forms.ModelForm):
+    """Form definition for Wishlist."""
+
+    class Meta:
+        """Meta definition for Wishlistform."""
+
+        model = Wishlist
+        fields = {}
+
+
+class CommentForm(ModelForm):
+    """CommentForm definition."""
+
+    class Meta:
+        model = Comment
+        fields = ("text",)
+        labels = {
+            "text": "Write a comment",
+        }
+
+
 class CloseForm(forms.Form):
     """From to close Lots."""
 
     lot_id = forms.HiddenInput()
-
-
-# class BidForm(forms.Form):
-#     amount = MoneyField
 
 
 class BidForm(forms.ModelForm):
@@ -57,7 +74,8 @@ class BidForm(forms.ModelForm):
         """Meta definition for Bidform."""
 
         model = Bid
-        fields = ("bid",)  # Notice the comma after "bid"
+        fields = ("bid",)
+        labels = {"bid": ""}  # Notice the comma after "bid"
 
 
 def index(request):
@@ -166,10 +184,10 @@ def category_lot_list(request, main_category, sub_category):
 
 
 def lot_page(request, main_category, sub_category, lot_id):
+    lot = Lot.objects.get(pk=lot_id)
     if request.method == "POST":
         submited_from = BidForm(request.POST)
         if submited_from.is_valid():
-            lot = Lot.objects.get(pk=lot_id)
             bid = submited_from.save(commit=False)
             money = submited_from.cleaned_data["bid"]
             if money.amount > lot.starting_price.amount:
@@ -183,7 +201,10 @@ def lot_page(request, main_category, sub_category, lot_id):
 
             else:
                 message = "Your bid was lower than starting price"
-    lot = Lot.objects.get(pk=lot_id)
+    try:
+        comments = Comment.objects.filter(lot=lot)
+    except:
+        comments = None
     try:
         if message:
             pass
@@ -204,11 +225,14 @@ def lot_page(request, main_category, sub_category, lot_id):
             "highest_bid": lot.highest_bid,
             "highest_bidder": lot.highest_bidder,
             "message": message,
+            "comments": comments,
+            "comment_form": CommentForm,
         },
     )
 
 
-def close_lot(request, lot_id):
+@login_required
+def close_lot(request, main_category, sub_category, lot_id):
     if request.method == "POST":
         lot = Lot.objects.get(pk=lot_id)
         lot.is_open = False
@@ -216,11 +240,49 @@ def close_lot(request, lot_id):
     return HttpResponseRedirect("/")
 
 
-def place_bid(request, lot_id):
+@login_required
+def place_bid(request, main_category, sub_category, lot_id):
+    lot = Lot.objects.get(pk=lot_id)
     if request.method == "POST":
-        bid_form = BidForm
-        pass
-    return HttpResponseRedirect("/")
+        submited_from = BidForm(request.POST)
+        if submited_from.is_valid():
+            bid = submited_from.save(commit=False)
+            money = submited_from.cleaned_data["bid"]
+            if money.amount > lot.starting_price.amount:
+                if lot.highest_bid is None or lot.highest_bid.amount < money.amount:
+                    bid.lot = lot
+                    bid.bidder = request.user
+                    bid.save()
+                    message = "Bid was succesfully placed"
+                else:
+                    message = "Your bid was lower than highest bid"
+
+            else:
+                message = "Your bid was lower than starting price"
+        else:
+            message = "Form was invalid"
+    else:
+        return HttpResponseRedirect("/")
+    try:
+        comments = Comment.objects.filter(lot=lot)
+    except:
+        comments = None
+    return render(
+        request,
+        "auctions/single_lot.html",
+        {
+            "lot": lot,
+            "main_category": main_category,
+            "sub_category": sub_category,
+            "bid_form": BidForm,
+            "close_form": CloseForm,
+            "highest_bid": lot.highest_bid,
+            "highest_bidder": lot.highest_bidder,
+            "message": message,
+            "comments": comments,
+            "comment_form": CommentForm,
+        },
+    )
 
 
 def update_bid_info(request, lot_id):
@@ -229,11 +291,95 @@ def update_bid_info(request, lot_id):
         if lot.highest_bidder != request.user:
             message = "You are no longer highest bidder. Refresh page"
             alert_class = "alert alert-warning role=alert"
+            highest_bid = str(lot.highest_bid)
+            highest_bidder = lot.highest_bidder.username
         else:
             message = "You are still Highest bidder"  # You can add additional messages here if needed
             alert_class = "alert alert-success role=alert"
-        context = {"message": message, "alert_class": alert_class}
+            highest_bid = str(lot.highest_bid)
+            highest_bidder = lot.highest_bidder.username
+        context = {
+            "message": message,
+            "alert_class": alert_class,
+            "highest_bid": highest_bid,
+            "highest_bidder": highest_bidder,
+        }
         return JsonResponse(context)
 
     except Lot.DoesNotExist:
         return JsonResponse({"error": "Lot not found"}, status=404)
+
+
+@login_required
+def add_comment(request, lot_id, user_id):
+    if request.method == "POST":
+        lot = Lot.objects.get(pk=lot_id)
+        user = User.objects.get(pk=user_id)
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.author = user
+            comment.lot = lot
+            comment.save()
+            try:
+                comments = Comment.objects.filter(lot=lot)
+            except:
+                comments = None
+        return render(
+            request,
+            "auctions/single_lot.html",
+            {
+                "lot": lot,
+                "main_category": lot.category.parent_category,
+                "sub_category": lot.category,
+                "bid_form": BidForm,
+                "close_form": CloseForm,
+                "highest_bid": lot.highest_bid,
+                "highest_bidder": lot.highest_bidder,
+                "message": None,
+                "comments": comments,
+                "comment_form": CommentForm,
+            },
+        )
+
+
+@login_required
+def wishlist(request, lot_id, user_id):
+    if request.method == "POST":
+        lot = Lot.objects.get(pk=lot_id)
+        user = User.objects.get(pk=user_id)
+        form = WishlistForm(request.POST)
+        form.user = user
+        form.lot = lot
+        if form.is_valid():
+            user_wishes = user.wished_lots.all()
+            for item in user_wishes:
+                if str(lot_id) == str(item):
+                    query = Wishlist.objects.filter(lot=lot)
+                    if query:
+                        query.delete()
+                        context = {
+                            "bookmark_message": "removed bookmark from wishlist",
+                            "bookmark_attr": "btn btn-outline-danger",
+                        }
+                        return JsonResponse(context)
+            wish = form.save(commit=False)
+            wish.user = user
+            wish.lot = lot
+            wish.save()
+            context = {
+                "bookmark_message": "Added to wishlist",
+                "bookmark_attr": "btn btn-outline-success",
+            }
+            return JsonResponse(context)
+
+
+@login_required
+def user_wishlist(request):
+    user = request.user
+    wished_items = Wishlist.objects.filter(user=user)
+    lots = []
+    for item in wished_items:
+        lots.append(item.lot)
+    print(lots)
+    return render(request, "auctions/wishlist.html", {"lots": lots})

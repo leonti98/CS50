@@ -34,7 +34,7 @@ class Sub_category(models.Model):
         verbose_name_plural = "Sub_categories"
 
     def __str__(self):
-        return self.sub_category
+        return str(self.sub_category)
 
 
 class Lot(models.Model):
@@ -112,10 +112,10 @@ class Comment(models.Model):
     )
     lot = models.ForeignKey(Lot, on_delete=models.CASCADE, related_name="comments")
     post_time = models.DateTimeField(auto_now_add=True)
-    text = models.TextField(max_length=200)
+    text = models.TextField(max_length=5000)
 
     def __str__(self):
-        return self.text
+        return str(self.text)
 
 
 class Wishlist(models.Model):
@@ -123,9 +123,9 @@ class Wishlist(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="user",
+        related_name="wished_lots",
     )
-    lot = models.ForeignKey(Lot, on_delete=models.CASCADE, related_name="lot")
+    lot = models.ForeignKey(Lot, on_delete=models.CASCADE, related_name="lots")
 
     def __str__(self):
-        return self.lot.title
+        return str(self.lot.id)

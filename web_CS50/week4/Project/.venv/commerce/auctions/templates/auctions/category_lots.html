@@ -17,52 +17,11 @@
             </ol>
         </nav>
         {% if lots %}
-            <div class="container">
-                <div class="row">
-                    <div class="col">
-                        <li class="list-group-item">{{ lot }}</li>
-                    </div>
-                    <div class="col">
-                        <li class="list-group-item">{{ lot }}</li>
-                    </div>
-                    <div class="col">
-                        <li class="list-group-item">{{ lot }}</li>
-                    </div>
-                    <section style="background-color: #eee;">
-                        <div class="container py-5">
-                            <div class="row">
-                                {% for lot in lots %}
-                                    <div class="col-md-12 col-lg-4 mb-4 mb-lg-0">
-                                        <div class="card product_card">
-                                            <img src="{{ lot.image }}"
-                                                 class="card-img-top"
-                                                 alt="{{ lot.title }}"
-                                                 height="300px"
-                                                 width="400px" />
-                                            <div class="card-body">
-                                                <div class="d-flex justify-content-between">
-                                                    <p class="small">
-                                                        <a href="{{ current_category }}" class="text-muted">{{ current_category }}</a>
-                                                    </p>
-                                                </div>
-                                                <div class="d-flex justify-content-between mb-3">
-                                                    <a href="{% url 'lot_page' main_category=main_category sub_category=current_category lot_id=lot.id %}">
-                                                        <h5 class="mb-0">{{ lot.title }}</h5>
-                                                    </a>
-                                                    <h5 class="text-dark mb-0">{{ lot.starting_price }}</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% else %}
-                <div class="alert alert-warning" role="alert">
-                    <h2 id="emptyCategory">Category is empty</h2>
-                </div>
-            {% endif %}
-        </div>
-    {% endblock body %}
+            {% include "auctions/product_archive.html" %}
+        {% else %}
+            <div class="alert alert-warning" role="alert">
+                <h2 id="emptyCategory">Category is empty</h2>
+            </div>
+        {% endif %}
+    </div>
+{% endblock body %}

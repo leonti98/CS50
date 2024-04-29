@@ -1,0 +1,29 @@
+<section>
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-12 col-lg-10">
+                <div class="text-dark te mb-4">
+                    <h4 class="mb-0">Recent Comments</h4>
+                </div>
+                <div class="card text-body">
+                    {% if comments %}
+                        {% for comment in comments %}
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between">
+                                    <div class="m-0">
+                                        <h6 class="text-capitalize card-title m-0">{{ comment.author.username }}</h6>
+                                    </div>
+                                    <div class="d-flex align-items-end m-0">
+                                        <p class="fs-6 text-secondary text-dark m-0">Date: {{ comment.post_time }}</p>
+                                    </div>
+                                </div>
+                                <hr>
+                                <p class="card-body">{{ comment.text }}</p>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
