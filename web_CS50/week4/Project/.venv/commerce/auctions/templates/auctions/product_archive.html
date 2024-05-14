@@ -1,40 +1,48 @@
-<div class="container">
-    <h2>Active Listings</h2>
-    <section id="lots_list">
-        <div class="container py-5">
-            <div class="row row-cols-5">
-                {% for lot in lots %}
-                    {% if lot.is_open == True %}
-                        <div class="col-md-12 col-lg-4 mb-4 mb-lg-0">
-                            <div class="card product_card">
-                                <img src="{{ lot.image }}"
-                                     class="card-img-top"
-                                     alt="{{ lot.title }}"
-                                     height="300px"
-                                     width="400px" />
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                        <p class="small">
-                                            <a href="{{ lot.category }}" class="text-muted">{{ lot.category }}</a>
-                                        </p>
-                                        <h5 class="text-dark mb-0 h6">{{ lot.starting_price }}</h5>
-                                    </div>
-                                    <div class="d-flex justify-content-between mb-3">
-                                        <a href="{% url 'lot_page' main_category=lot.category.parent_category sub_category=lot.category lot_id=lot.id %}">
-                                            <h5 class="mb-0">{{ lot.title }}</h5>
-                                        </a>
-                                        {% if lot.highest_bid %}
-                                            <h5 class="badge text-bg-primary text-wrap">Current bid: {{ lot.highest_bid }}</h5>
-                                        {% else %}
-                                            <h5 class="badge text-bg-primary text-wrap">Current bid: No bids</h5>
-                                        {% endif %}
-                                    </div>
-                                </div>
+{% for lot in lots %}
+    {% if lot.is_open == True %}
+        <div class="container mt-1 mb-1">
+            <div class="d-flex justify-content-center row">
+                <div class="col-md-10">
+                    <div class="row p-2 bg-white border rounded">
+                        <div class="col-md-3 mt-1">
+                            <img class="img-fluid img-responsive rounded product-image"
+                                 src="{{ lot.image }}">
+                        </div>
+                        <div class="col-md-6 mt-1">
+                            <h5>
+                                <a href="{% url 'lot_page' main_category=lot.category.parent_category sub_category=lot.category lot_id=lot.id %}">{{ lot.title }}</a>
+                            </h5>
+                            <p class="small text-capitalize text-info">
+                                <a href="{% url 'main_categories' %}" class="link-dark">Categories</a>
+                                >
+                                <a href="{% url 'sub_categories' main_category=lot.category.parent_category %}"
+                                   class="link-dark">{{ lot.category.parent_category }}</a>
+                                >
+                                <a href="{% url 'category_lot_list' main_category=lot.category.parent_category sub_category=lot.category %}"
+                                   class="link-dark">{{ lot.category }}</a>
+                            </p>
+                            <div class="mt-1 mb-1 spec-1">{{ lot.description }}</div>
+                        </div>
+                        <div class="align-items-center align-content-between col-md-3 border-left mt-3">
+                            <div class="d-flex flex-row align-items-baseline mb-3">
+                                <h6 class="mr-1">Starting price: {{ lot.starting_price }}</h6>
+                            </div>
+                            <div class="d-flex flex-row align-items-center">
+                                {% if lot.highest_bid %}
+                                    <h5 class="mr-1 text-info">Current price: {{ lot.highest_bid }}</h5>
+                                {% else %}
+                                    <h5 class="mr-1 text-info">No Bids</h5>
+                                {% endif %}
+                            </div>
+                            <div class="d-flex flex-column mt-4">
+                                <button class="btn btn-primary btn-sm" type="button">
+                                    <a href="{% url 'lot_page' main_category=lot.category.parent_category sub_category=lot.category lot_id=lot.id %}">Details</a>
+                                </button>
                             </div>
                         </div>
-                    {% endif %}
-                {% endfor %}
+                    </div>
+                </div>
             </div>
         </div>
-    </section>
-</div>
+    {% endif %}
+{% endfor %}

@@ -40,4 +40,5 @@ urlpatterns = [
     ),
     path("wishlist/<int:lot_id>/<int:user_id>/", views.wishlist, name="wishlist"),
     path("user_wishlist/", views.user_wishlist, name="user_wishlist"),
+    path("user_listings/", views.user_listings, name="user_listings"),
 ]

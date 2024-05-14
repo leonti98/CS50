@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.forms import DateInput, ModelForm
@@ -232,12 +232,18 @@ def lot_page(request, main_category, sub_category, lot_id):
 
 
 @login_required
-def close_lot(request, main_category, sub_category, lot_id):
+def close_lot(request, lot_id):
     if request.method == "POST":
         lot = Lot.objects.get(pk=lot_id)
         lot.is_open = False
         lot.save()
-    return HttpResponseRedirect("/")
+        print("wtf!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        return redirect(
+            "lot_page",
+            main_category=lot.category.parent_category,
+            sub_category=lot.category,
+            lot_id=lot.id,
+        )
 
 
 @login_required
@@ -267,6 +273,7 @@ def place_bid(request, main_category, sub_category, lot_id):
         comments = Comment.objects.filter(lot=lot)
     except:
         comments = None
+
     return render(
         request,
         "auctions/single_lot.html",
@@ -383,3 +390,10 @@ def user_wishlist(request):
         lots.append(item.lot)
     print(lots)
     return render(request, "auctions/wishlist.html", {"lots": lots})
+
+
+@login_required
+def user_listings(request):
+    user = request.user
+    lots = Lot.objects.filter(owner=user)
+    return render(request, "auctions/user_listings.html", {"lots": lots})

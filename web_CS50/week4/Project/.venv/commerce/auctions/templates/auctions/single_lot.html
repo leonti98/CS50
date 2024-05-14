@@ -37,46 +37,42 @@
                                         <div>
                                             <div class=" d-flex justify-content-between">
                                                 <h5 class="text-uppercase h6">{{ lot.title }}</h5>
-                                                <form action="{% url 'wishlist' lot_id=lot.id user_id=user.id %}"
-                                                      method="post"
-                                                      id="wish_form">
-                                                    {% csrf_token %}
-                                                    <button type="submit" class="btn btn-outline-danger" id="bookmark_btn">
-                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                             width="16"
-                                                             height="16"
-                                                             fill="currentColor"
-                                                             class="bi bi-bookmark"
-                                                             viewBox="0 0 16 16">
-                                                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z">
-                                                            </path>
-                                                        </svg>
-                                                        <span class="visually-hidden">Button</span>
-                                                    </button>
-                                                </form>
+                                                {% if user.is_authenticated %}
+                                                    <form action="{% url 'wishlist' lot_id=lot.id user_id=user.id %}"
+                                                          method="post"
+                                                          id="wish_form">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-outline-danger" id="bookmark_btn">
+                                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                                 width="16"
+                                                                 height="16"
+                                                                 fill="currentColor"
+                                                                 class="bi bi-bookmark"
+                                                                 viewBox="0 0 16 16">
+                                                                <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z">
+                                                                </path>
+                                                            </svg>
+                                                            <span class="visually-hidden">Button</span>
+                                                        </button>
+                                                    </form>
+                                                {% endif %}
                                             </div>
                                             <div class="d-flex flex-wrap align-items-center">
-                                                <h5 class="badge text-bg-primary text-wrap">Seller: {{ lot.owner.username }}</h5>
-                                                <h5 class="badge text-bg-primary text-wrap ml-5">Starting price: {{ lot.starting_price }}</h5>
+                                                <h5 class="badge text-bg-primary text-wrap m-1">Seller: {{ lot.owner.username }}</h5>
+                                                <h5 class="badge text-bg-primary text-wrap m-1">Starting price: {{ lot.starting_price }}</h5>
                                             </div>
                                         </div>
                                     </div>
                                     <p class="about">{{ lot.description }}</p>
                                     <div class="cart mt-4 align-items-center">
-                                        <div id="Timer"></div>
                                         <div id="lot-info" data-lot-id="{{ lot.id }}">
                                             {% if lot.is_open %}
                                                 {% if highest_bid %}
-                                                    <div>
-                                                        <div id="highest-bid" class="alert alert-info" role="alert">
-                                                            <span>Highest Bid :</span>
-                                                            <span id="highest_bid">{{ highest_bid }}</span>
-                                                            <span>by</span>
-                                                            <span id="highest_bidder">{{ highest_bidder }}</span>
-                                                        </div>
+                                                    <div class="text-info">
+                                                        Current Price: <span id="highest_bid">{{ highest_bid }}</span>
                                                     </div>
                                                 {% endif %}
-                                                {% if lot.highest_bidder != request.user %}
+                                                {% if user.is_authenticated and lot.owner != user %}
                                                     <div id="bid_form">
                                                         <form action="{% url 'place_bid' main_category=lot.category.parent_category sub_category=lot.category lot_id=lot.id %}"
                                                               method="post">
@@ -85,10 +81,17 @@
                                                             <button type="submit" class="btn btn-success text-uppercase mr-2 px-4">Bid</button>
                                                         </form>
                                                     </div>
+                                                {% elif user.is_authenticated == False %}
+                                                    <div class="alert alert-warning mt-2" role="alert">
+                                                        You are not logged in. <a href="{% url 'login' %}">Please log in to place a bid</a>
+                                                    </div>
+                                                {% elif request.user == lot.owner %}
+                                                    <div class="alert alert-warning mt-2" role="alert">You can not bid on your own lot</div>
                                                 {% else %}
-                                                    <div id="message" class="alert alert-success" role="alert">You are highest bidder</div>
+                                                    <div id="message" class="alert alert-success mt-2" role="alert">You are highest bidder</div>
                                                 {% endif %}
-                                                {% if message %}<div id="second_message" class="alert alert-warning" role="alert">{{ message }}</div>{% endif %}
+                                                <div id="Timer" class="Timer text-opacity-75"></div>
+                                                {% if message %}<div id="second_message" class="alert alert-warning mt-2" role="alert">{{ message }}</div>{% endif %}
                                                 {% if user.id == lot.owner.id %}
                                                     <form action="{% url 'close_lot' lot_id=lot.id %}" method="post">
                                                         {% csrf_token %}
@@ -117,6 +120,10 @@
                                                 <div>{{ comment_form | crispy }}</div>
                                                 <button type="submit" class="btn btn-success text-uppercase mr-2 px-4">Comment</button>
                                             </form>
+                                        {% else %}
+                                            <div class="alert alert-warning mt-2" role="alert">
+                                                You are not logged in. <a href="{% url 'login' %}">Plese log in to write a comment</a>
+                                            </div>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -144,7 +151,6 @@
                     console.log($('#second_message'))
                     $('#second_message').remove();
                     $('#highest_bid').text(data.highest_bid);
-                    $('#highest_bidder').text(data.highest_bidder);
 
                 },
                 error: function(xhr, status, error) {

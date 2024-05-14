@@ -80,7 +80,7 @@ class Lot(models.Model):
     is_open = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"Lot: {self.title}, Starting Price: {self.starting_price}, Category: {self.category}"
+        return f"Lot: {self.title}, Starting Price: {self.starting_price}, Category: {self.category}, highest_bidder: {self.highest_bidder}, highest_bid: {self.highest_bid}"
 
 
 class Bid(models.Model):
