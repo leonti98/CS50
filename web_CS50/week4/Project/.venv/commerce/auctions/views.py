@@ -11,6 +11,8 @@ from djmoney.models.fields import MoneyField
 from djmoney.models.validators import MinMoneyValidator
 from django.contrib import messages
 import datetime
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.generic import ListView
 
 from .models import User
 
@@ -59,6 +61,11 @@ class CommentForm(ModelForm):
         labels = {
             "text": "Write a comment",
         }
+        widgets = {
+            "text": forms.Textarea(
+                attrs={"type": "text", "rows": 3, "class": "form-control"}
+            )
+        }
 
 
 class CloseForm(forms.Form):
@@ -79,8 +86,21 @@ class BidForm(forms.ModelForm):
 
 
 def index(request):
-    lots = Lot.objects.all()
+    lots = Lot.objects.filter(is_open=True).order_by("-open_time")
+    p = Paginator(lots, 5)  # creating a paginator object
+    # getting the desired page number from url
+    page_number = request.GET.get("page")
+    try:
+        lots = p.get_page(page_number)  # returns the desired page object
+    except PageNotAnInteger:
+        # if page_number is not an integer then assign the first page
+        lots = p.page(1)
+    except EmptyPage:
+        # if page is empty then return last page
+        lots = p.page(p.num_pages)
+    # sending the page object to index.html
     return render(request, "auctions/index.html", {"lots": lots})
+    # return render(request, "auctions/index.html", {"lots": lots})
 
 
 def login_view(request):
@@ -171,7 +191,20 @@ def sub_categories(request, main_category):
 def category_lot_list(request, main_category, sub_category):
     current_sub_category = Sub_category.objects.get(sub_category=sub_category)
     sub_category_id = current_sub_category.id
-    lots = Lot.objects.filter(category=sub_category_id)
+    lots = Lot.objects.filter(category=sub_category_id, is_open=True).order_by(
+        "-open_time"
+    )
+    p = Paginator(lots, 5)  # creating a paginator object
+    # getting the desired page number from url
+    page_number = request.GET.get("page")
+    try:
+        lots = p.get_page(page_number)  # returns the desired page object
+    except PageNotAnInteger:
+        # if page_number is not an integer then assign the first page
+        lots = p.page(1)
+    except EmptyPage:
+        # if page is empty then return last page
+        lots = p.page(p.num_pages)
     return render(
         request,
         "auctions/category_lots.html",
@@ -312,7 +345,6 @@ def update_bid_info(request, lot_id):
             "highest_bidder": highest_bidder,
         }
         return JsonResponse(context)
-
     except Lot.DoesNotExist:
         return JsonResponse({"error": "Lot not found"}, status=404)
 

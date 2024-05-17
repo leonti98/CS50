@@ -14,8 +14,7 @@ div.col-md-12:nth-child(1) > div:nth-child(1) {
     margin-top: 10px;
 }
 
-#user_greeting {
-    color: chocolate;
+
+button.btn.btn-info.btn-sm a {
+    color: aliceblue;
 }
-
-

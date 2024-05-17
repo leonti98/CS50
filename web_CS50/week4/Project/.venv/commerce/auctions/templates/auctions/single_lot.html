@@ -72,7 +72,7 @@
                                                         Current Price: <span id="highest_bid">{{ highest_bid }}</span>
                                                     </div>
                                                 {% endif %}
-                                                {% if user.is_authenticated and lot.owner != user %}
+                                                {% if user.is_authenticated and lot.owner != user and lot.highest_bidder != request.user %}
                                                     <div id="bid_form">
                                                         <form action="{% url 'place_bid' main_category=lot.category.parent_category sub_category=lot.category lot_id=lot.id %}"
                                                               method="post">
@@ -117,7 +117,7 @@
                                             <form action="{% url 'add_comment' lot_id=lot.id user_id=user.id %}"
                                                   method="post">
                                                 {% csrf_token %}
-                                                <div>{{ comment_form | crispy }}</div>
+                                                <div class="mb-3">{{ comment_form | crispy }}</div>
                                                 <button type="submit" class="btn btn-success text-uppercase mr-2 px-4">Comment</button>
                                             </form>
                                         {% else %}

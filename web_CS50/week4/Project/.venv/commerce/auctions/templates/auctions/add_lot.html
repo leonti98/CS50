@@ -1,10 +1,11 @@
 {% extends "auctions/layout.html" %}
+{% load crispy_forms_tags %}
 {% block title %}
     Add Lot
 {% endblock title %}
 {% load crispy_forms_tags %}
 {% block body %}
-    <div class="container">
+    <div class="container mb-5">
         <h1>Add Lot</h1>
         <div>
             <form action="add_lot" method="post">
