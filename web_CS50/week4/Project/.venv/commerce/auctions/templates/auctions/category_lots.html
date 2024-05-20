@@ -17,7 +17,10 @@
             </ol>
         </nav>
         {% if lots %}
-            {% include "auctions/product_archive.html" %}
+            {% for lot in lots %}
+                {% include "auctions/product_archive.html" %}
+            {% endfor %}
+            {% include "auctions/pagination.html" %}
         {% else %}
             <div class="alert alert-warning" role="alert">
                 <h2 id="emptyCategory">Category is empty</h2>

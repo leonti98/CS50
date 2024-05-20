@@ -7,8 +7,6 @@ from django.contrib.auth.decorators import login_required
 from django.forms import DateInput, ModelForm
 from auctions.models import Lot, Sub_category, Main_Category, Bid, Comment, Wishlist
 from django import forms
-from djmoney.models.fields import MoneyField
-from djmoney.models.validators import MinMoneyValidator
 from django.contrib import messages
 import datetime
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -82,7 +80,12 @@ class BidForm(forms.ModelForm):
 
         model = Bid
         fields = ("bid",)
-        labels = {"bid": ""}  # Notice the comma after "bid"
+        labels = {"bid": ""}
+        # widgets = {
+        #     "text": MoneyWidget(
+        #         attrs={"type": "text", "rows": 3, "class": "form-control"}
+        #     )
+        # }
 
 
 def index(request):
@@ -100,7 +103,6 @@ def index(request):
         lots = p.page(p.num_pages)
     # sending the page object to index.html
     return render(request, "auctions/index.html", {"lots": lots})
-    # return render(request, "auctions/index.html", {"lots": lots})
 
 
 def login_view(request):
@@ -417,15 +419,28 @@ def wishlist(request, lot_id, user_id):
 def user_wishlist(request):
     user = request.user
     wished_items = Wishlist.objects.filter(user=user)
-    lots = []
-    for item in wished_items:
-        lots.append(item.lot)
-    print(lots)
-    return render(request, "auctions/wishlist.html", {"lots": lots})
+    open_lots = []
+    closed_lots = []
+    if wished_items:
+        for item in wished_items:
+            if item.lot.is_open:
+                open_lots.append(item.lot)
+            else:
+                closed_lots.append(item.lot)
+    return render(
+        request,
+        "auctions/wishlist.html",
+        {"open_lots": open_lots, "closed_lots": closed_lots},
+    )
 
 
 @login_required
 def user_listings(request):
     user = request.user
-    lots = Lot.objects.filter(owner=user)
-    return render(request, "auctions/user_listings.html", {"lots": lots})
+    open_lots = Lot.objects.filter(owner=user, is_open=True)
+    closed_lots = Lot.objects.filter(owner=user, is_open=False)
+    return render(
+        request,
+        "auctions/user_listings.html",
+        {"open_lots": open_lots, "closed_lots": closed_lots},
+    )
