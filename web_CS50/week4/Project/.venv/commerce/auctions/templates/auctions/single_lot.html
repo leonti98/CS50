@@ -68,7 +68,7 @@
                                         <div id="lot-info" data-lot-id="{{ lot.id }}">
                                             {% if lot.is_open %}
                                                 {% if highest_bid %}
-                                                    <div class="text-info">
+                                                    <div class="text-info mb-2">
                                                         Current Price: <span id="highest_bid">{{ highest_bid }}</span>
                                                     </div>
                                                 {% endif %}
@@ -81,6 +81,14 @@
                                                             <button type="submit" class="btn btn-success text-uppercase mr-2 px-4">Bid</button>
                                                         </form>
                                                     </div>
+                                                    <div class="d-flex m-2">
+                                                        <div class="timer">
+                                                            <div class="progress-container">
+                                                                <div class="progress"></div>
+                                                            </div>
+                                                            <div class="display"></div>
+                                                        </div>
+                                                    </div>
                                                 {% elif user.is_authenticated == False %}
                                                     <div class="alert alert-warning mt-2" role="alert">
                                                         You are not logged in. <a href="{% url 'login' %}">Please log in to place a bid</a>
@@ -89,8 +97,15 @@
                                                     <div class="alert alert-warning mt-2" role="alert">You can not bid on your own lot</div>
                                                 {% else %}
                                                     <div id="message" class="alert alert-success mt-2" role="alert">You are highest bidder</div>
+                                                    <div class="d-flex m-2">
+                                                        <div class="timer">
+                                                            <div class="progress-container">
+                                                                <div class="progress"></div>
+                                                            </div>
+                                                            <div class="display"></div>
+                                                        </div>
+                                                    </div>
                                                 {% endif %}
-                                                <div id="Timer" class="Timer text-opacity-75"></div>
                                                 {% if message %}<div id="second_message" class="alert alert-warning mt-2" role="alert">{{ message }}</div>{% endif %}
                                                 {% if user.id == lot.owner.id %}
                                                     <form action="{% url 'close_lot' lot_id=lot.id %}" method="post">
@@ -140,10 +155,6 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        let timeLeft = 10;
-        const elem = document.getElementById('Timer');
-        const timerId = setInterval(countdown, 1000);
-
         function updateBidInfo() {
             const lotId = $('#lot-info').data('lot-id');
             $.ajax({
@@ -162,16 +173,9 @@
                 }
             });
         }
-        
-        function countdown() {
-            if (timeLeft == 0) {
-                updateBidInfo();
-                timeLeft = 10;
-            } else {
-                elem.innerHTML = 'Refreshing info In ' + timeLeft;
-                timeLeft--;
-            }
-        }
+
+        //updateBidInfo();
+        // add to wishlist function
         $(function() {
             $("#wish_form").submit(function(event) {
                 // Stop form from submitting normally
@@ -194,6 +198,45 @@
                 });
             });
         });
-        // 10 seconds in milliseconds
+
+        
+
     </script>
+    {% if user.is_authenticated and lot.owner != request.user %}
+        <script>
+                // new countdown 
+                const get = (query) => document.querySelector(query);
+                const wait = (s) => new Promise((r) => setTimeout(r, s * 1000));
+        
+                const display = get('.timer .display');
+                const progress = get('.timer .progress');
+        
+                const INIT_TIME = 10;
+                let timeRemaining = INIT_TIME;
+        
+                const updateTimer = () => {
+                const interval = setInterval(() => {
+                    timeRemaining -= 0.1;
+        
+                    if (timeRemaining <= 0) {
+                    clearInterval(interval);
+                    timeRemaining = INIT_TIME;
+                    updateBidInfo();  // Assuming updateBidInfo is defined elsewhere
+                    display.innerText = `Info refresh in ${timeRemaining}s`;
+                    progress.style.setProperty('--progress', 1);
+                    setTimeout(updateTimer, 100);
+                    } else {
+                    if (Math.ceil(timeRemaining) !== Math.ceil(timeRemaining + 0.1)) {
+                        display.innerText = `Info refresh in ${Math.ceil(timeRemaining)}s`;
+                    }
+                    const newProgress = timeRemaining / INIT_TIME;
+                    progress.style.setProperty('--progress', newProgress);
+                    }
+                }, 100);
+                };
+        
+                updateTimer();
+        
+        </script>
+    {% endif %}
 {% endblock body %}
