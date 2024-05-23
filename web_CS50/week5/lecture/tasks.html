@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tasks</title>
+        <script>
+            // wait for DOM content to load
+            document.addEventListener('DOMContentLoaded', function (){
+
+                // By default submit button is disabled
+                document.querySelector('#submit').disabled = true;
+
+                // add on key up event listener to task input field
+                document.querySelector('#task').onkeyup = () => {
+                    if (document.querySelector('#task').value.length > 0) {
+                        document.querySelector('#submit').disabled = false;
+                    }
+                    else {
+                        document.querySelector('#submit').disabled = true;
+                    }
+                }
+
+                // function to run after form submit
+                document.querySelector('form').onsubmit = () => {
+                    // select value of input field
+                    const task = document.querySelector('#task').value;
+                    // cleate new list item
+                    const li = document.createElement('li');
+                    // change list items value to task input fields value
+                    li.innerHTML = task;
+                    // appent to list
+                    document.querySelector('#tasks').append(li)
+                    // clear input field
+                    document.querySelector('#task').value = '';
+                    // disable submit again
+                    document.querySelector('#submit').disabled = true;
+
+                    // stop form from submitting. not load page on submit
+                    return false
+                };
+            });
+        </script>
+    </head>
+    <body>
+        <h1>Tasks</h1>
+        <ul id="tasks">
+        </ul>
+        <form>
+            <input type="text" id="task" placeholder="New Task">
+            <input type="submit" id="submit">
+        </form>
+    </body>
+</html>
