@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Single Page</title>
+    <style></style>
+    <script
+      src="https://unpkg.com/htmx.org@1.9.12"
+      integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <h1>Hello!</h1>
+
+    <button hx-get="/sections/1" hx-target="#content">section1</button>
+    <button hx-get="/sections/2" hx-target="#content">section2</button>
+    <button hx-get="/sections/3" hx-target="#content">section3</button>
+    <div id="content"></div>
+  </body>
+</html>
