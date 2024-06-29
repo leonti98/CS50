@@ -36,7 +36,7 @@ function load_mailbox(mailbox) {
     .then((emails) => {
       // Get the emails table element
       const emailsTable = document.querySelector('#emails-table');
-      // Clear any existing content in the emails table
+      // Clear any existing content in the emails table add current mailbox title
       emailsTable.innerHTML = `<h3 class='mb-3 ms-1'>${
         mailbox.charAt(0).toUpperCase() + mailbox.slice(1)
       }</h3>`;
@@ -139,13 +139,10 @@ function load_mailbox(mailbox) {
                             </div>
                         </div>`;
 
-          // Remove class from active item
-          const liBackground = document.querySelector('.bg-blue-300');
-          if (liBackground) {
-            if (liBackground.classList.contains('bg-white')) {
-              liBackground;
-            }
-            liBackground.classList.remove('bg-blue-300', 'text-white');
+          const PreviouslySelectedLi = document.querySelector('.bg-blue-300');
+          // Remove class from previously selected item
+          if (PreviouslySelectedLi) {
+            PreviouslySelectedLi.classList.remove('bg-blue-300', 'text-white');
           }
           // Remove backround if mail was not read
           if (li.classList.contains('bg-white')) {
@@ -223,18 +220,6 @@ addEventListener('DOMContentLoaded', () => {
   };
 });
 
-function createReplyButton(email) {
-  // Create reply Button
-  const replyButton = document.createElement('button');
-  replyButton.innerHTML = '<i class="fa-solid fa-reply"></i>';
-  replyButton.className = 'btn btn-primary';
-  replyButton.id = 'replyButton';
-  replyButton.value = `${email.id}`;
-  replyButton.onclick = reply;
-
-  return replyButton;
-}
-
 function createArchiveButton(email) {
   // Create reply Button
   const archiveBTN = document.createElement('button');
@@ -251,6 +236,18 @@ function createArchiveButton(email) {
   archiveBTN.onclick = archive;
 
   return archiveBTN;
+}
+
+function createReplyButton(email) {
+  // Create reply Button
+  const replyButton = document.createElement('button');
+  replyButton.innerHTML = '<i class="fa-solid fa-reply"></i>';
+  replyButton.className = 'btn btn-primary';
+  replyButton.id = 'replyButton';
+  replyButton.value = `${email.id}`;
+  replyButton.onclick = reply;
+
+  return replyButton;
 }
 
 // Function to add to archive
