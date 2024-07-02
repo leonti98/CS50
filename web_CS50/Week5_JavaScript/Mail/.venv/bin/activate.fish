@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/home/odin/cs50/courses/CS50/web_CS50/week5/Mail/.venv"
+set -gx VIRTUAL_ENV "/home/odin/cs50/courses/CS50/web_CS50/Week5_JavaScript/Mail/.venv"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH

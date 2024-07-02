@@ -1,4 +1,4 @@
-#!/home/odin/cs50/courses/CS50/web_CS50/week5/Mail/.venv/bin/python3
+#!/home/odin/cs50/courses/CS50/web_CS50/Week5_JavaScript/Mail/.venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
