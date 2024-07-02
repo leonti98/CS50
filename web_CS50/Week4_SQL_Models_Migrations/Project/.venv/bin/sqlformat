@@ -1,4 +1,4 @@
-#!/home/odin/cs50/courses/CS50/web_CS50/week4/Project/.venv/bin/python3
+#!/home/odin/cs50/courses/CS50/web_CS50/Week4_SQL_Models_Migrations/Project/.venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
