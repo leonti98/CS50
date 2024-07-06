@@ -37,9 +37,9 @@ Welcome to my repository containing completed coursework for CS50, CS50 Web, and
 - [x] Git
 - [x] Python
 - [x] Django
-- [ ] SQL, Models, and Migrations
-- [ ] JavaScript
-- [ ] User Interfaces
+- [x] SQL, Models, and Migrations
+- [x] JavaScript
+- [x] User Interfaces
 - [ ] Testing, CI/CD
 - [ ] Scalability and Security
 - [ ] Final
