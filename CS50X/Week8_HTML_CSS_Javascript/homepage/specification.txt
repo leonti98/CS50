@@ -1,0 +1,35 @@
+html tags:
+<div>
+<input>
+<i>
+<h1>
+<hr>
+<h2>
+<ul>
+<h3>
+<p>
+<h4>
+<button>
+<span>
+
+CSS properties:
+display: flex;
+justify-content
+background-color
+color
+min-width
+flex-grow
+margin
+position
+paddings
+
+Bootstrap components:
+container
+row
+carousel
+tabs
+switches
+
+Javascript:
+Added listener to Bootstrap switch, which allows users to switch between
+light and dark mode of the webspage(implementation is most likely horrible :D).
