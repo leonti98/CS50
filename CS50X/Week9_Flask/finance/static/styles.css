@@ -33,3 +33,10 @@ td {
     justify-content: center;
     max-width: 400px;
 }
+
+.quote-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
